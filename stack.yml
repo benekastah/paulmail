@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  postfixadmin_db:
+    image: postgres:14-alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postfixadmin
+      POSTGRES_DB: postfixadmin
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - postfixadmin_data:/var/lib/postgresql/data
+
+  postfixadmin:
+    depends_on:
+      - postfixadmin_db
+    image: postfixadmin:3.3-apache
+    ports:
+      - 8000:80
+    restart: always
+    environment:
+      POSTFIXADMIN_DB_TYPE: pgsql
+      POSTFIXADMIN_DB_HOST: postfixadmin_db
+      POSTFIXADMIN_DB_USER: postfixadmin
+      POSTFIXADMIN_DB_NAME: postfixadmin
+      POSTFIXADMIN_DB_PASSWORD: postgres
+      # Dev password: setup11
+      POSTFIXADMIN_SETUP_PASSWORD: "$$2y$$10$$C1hwLKHGXCREsXd7fXNVZ.ONdKra1OX9XQzhWZexQ2shN/k/P7Ku6"
+        
+volumes:
+  postfixadmin_data:
